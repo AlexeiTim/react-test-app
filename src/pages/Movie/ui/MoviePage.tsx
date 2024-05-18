@@ -4,21 +4,18 @@ import { moviesService } from "@/entities/movie";
 import { useParams } from "react-router-dom";
 import { MovieDetailResponse } from "@/entities/movie/types/movies-detail-response";
 import { AppLoader } from "@/shared/ui/AppLoader";
-import { defineErrorMessage } from "@/shared/lib/defineErrorMessage";
 import { IconX } from "@tabler/icons-react";
 import { Button, Divider, Flex, Image, Modal, Notification, NumberFormatter, Paper, Rating, Text } from "@mantine/core";
-import { useNavigate } from "react-router-dom"
 import { useDisclosure } from "@mantine/hooks";
 import { useMemo } from "react";
 import NotPoster from '@/app/assets/imgs/NotPoster.png'
-import { genresService } from "@/entities/genres/api";
 import dayjs from "dayjs";
 import NotCompanyLogo from '@/app/assets/imgs/NotCompanyLogo.png'
 
 export const MoviePage = () => {
     const params = useParams()
     const [movie, setMovie] = useState<MovieDetailResponse | null>(null)
-    const [error, setError] = useState<any>(null)
+    const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [opened, { open, close }] = useDisclosure(false);
 
@@ -69,7 +66,7 @@ export const MoviePage = () => {
             const { data } = await moviesService.getMovie(id)
             setMovie(data)
         } catch (e) {
-            setError(defineErrorMessage(e))
+            setError('RequestError')
         } finally {
             setIsLoading(false)
         }

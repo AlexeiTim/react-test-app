@@ -1,5 +1,4 @@
 import { Anchor, Breadcrumbs } from "@mantine/core";
-import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface Props {
@@ -14,16 +13,14 @@ export const MovieDetailBreadcrumbs = (props: Props) => {
         navigate(path)
     }
 
-    const items = useMemo(() => {
-        return [
-            { title: location.pathname.includes('rated') ? 'rated' : 'movies', href: location.pathname.includes('rated') ? '/rated-movies' : '/movies' },
-            { title: props.originalTitle, href: '#' },
-        ].map((item, index) => (
-            <Anchor onClick={() => handleGoTo(item.href)} key={index}>
-                {item.title}
-            </Anchor>
-        ));
-    }, [props.originalTitle])
+    const items = [
+        { title: location.pathname.includes('rated') ? 'rated' : 'movies', href: location.pathname.includes('rated') ? '/rated-movies' : '/movies' },
+        { title: props.originalTitle, href: '#' },
+    ].map((item, index) => (
+        <Anchor onClick={() => handleGoTo(item.href)} key={index}>
+            {item.title}
+        </Anchor>
+    ));
 
     return (
         <Breadcrumbs>{items}</Breadcrumbs>

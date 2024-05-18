@@ -1,4 +1,4 @@
-import type { ResponseType } from 'axios'
+import type { AxiosRequestHeaders, ResponseType } from 'axios'
 
 export interface BaseResponse<T> {
   data: T
@@ -23,8 +23,8 @@ export interface Request {
   url: string
   method?: string
   responseType?: ResponseType
-  headers?: any
-  params?: any
-  data?: any
+  headers?: AxiosRequestHeaders
+  params?: unknown
+  data?: unknown
   paramsSerializer?: (params: object | string) => string
 }

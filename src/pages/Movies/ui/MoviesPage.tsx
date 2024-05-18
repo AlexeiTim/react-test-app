@@ -1,6 +1,6 @@
 import { MovieCard, moviesService } from "@/entities/movie";
 import { Button, Flex, Grid, Input, Notification, Pagination, Select } from "@mantine/core";
-import { YearPickerInput } from '@mantine/dates';
+import { DateValue, YearPickerInput } from '@mantine/dates';
 import emptyMovies from '@/app/assets/imgs/emptyMovies.png'
 import { useEffect, useMemo, useState } from "react";
 import { IconX } from '@tabler/icons-react';
@@ -12,6 +12,7 @@ import { genresService } from "@/entities/genres/api";
 import dayjs from "dayjs";
 import { favoriteMoviesStorageService } from "@/entities/movie/storage";
 import { MovieFavorite } from "@/entities/movie/types/movie-favorite";
+import { MovieRequestParams } from "@/entities/movie/types/movie-request-params";
 
 export const MoviesPage = () => {
     const [totalPages, setTotalPages] = useState(0)
@@ -21,7 +22,7 @@ export const MoviesPage = () => {
     const [movies, setMovies] = useState<Movie[]>([])
     const [genres, setGenres] = useState<Genre[]>([])
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
-    const [selectedReleaseYear, setSelectedReleaseYear] = useState<string | null>(null)
+    const [selectedReleaseYear, setSelectedReleaseYear] = useState<DateValue | null>(null)
     const [selectedRaitingFrom, setSelectedRaitingFrom] = useState<string | null>(null)
     const [selectedRaitingTo, setSelectedRaitingTo] = useState<string | null>(null)
     const [selectedSort, setSelectedSort] = useState<string | null>(null)
@@ -29,7 +30,7 @@ export const MoviesPage = () => {
 
     useEffect(() => {
         setFavorites(favoriteMoviesStorageService.favorites)
-    }, [])
+    }, [favorites])
 
     const ratingsOptions = Array(10).fill(null).map((_, index) => String(index + 1))
 
@@ -67,7 +68,7 @@ export const MoviesPage = () => {
         }
     }, [activePage, selectedGenre, selectedReleaseYear, selectedRaitingFrom, selectedRaitingTo, selectedSort])
 
-    async function getMovies(params: any) {
+    async function getMovies(params: MovieRequestParams) {
         try {
             setError(null)
             setIsLoading(true)

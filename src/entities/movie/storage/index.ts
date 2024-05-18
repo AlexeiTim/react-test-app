@@ -10,7 +10,7 @@ class FavoriteMoviesStorage {
             this.initFavorites()
 
         this.favoritesMap.set(favoriteMovie.id, favoriteMovie)
-        const newArray = Array.from(this.favoritesMap, ([_, value]) => value)
+        const newArray = Array.from(this.favoritesMap, (favoriteArray) => favoriteArray[1])
         localStorage.setItem(STORAGE_KEYS.FAVORITE_MOVIES, JSON.stringify(newArray))
     }
 
@@ -19,7 +19,7 @@ class FavoriteMoviesStorage {
             this.initFavorites()
 
         this.favoritesMap.delete(id)
-        const newArray = Array.from(this.favoritesMap, ([_, value]) => value)
+        const newArray = Array.from(this.favoritesMap, (favoriteArray) => favoriteArray[1])
         localStorage.setItem(STORAGE_KEYS.FAVORITE_MOVIES, JSON.stringify(newArray))
     }
 
@@ -40,7 +40,7 @@ class FavoriteMoviesStorage {
         if (!this.favoritesMap.size)
             return []
 
-        return Array.from(this.favoritesMap, ([_, value]) => value)
+        return Array.from(this.favoritesMap, (favoriteArray) => favoriteArray[1])
     }
 }
 
