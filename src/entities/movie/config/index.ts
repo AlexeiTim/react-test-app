@@ -1,4 +1,5 @@
 
 export const ENDPOINTS = {
-    MOVIES: '/discover/movie'
+    MOVIES: '/discover/movie',
+    MOVIE_DETAIL: '/movie'
 }

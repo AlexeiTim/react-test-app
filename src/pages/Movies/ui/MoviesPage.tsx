@@ -9,6 +9,7 @@ import { Movie } from "@/entities/movie/types/movie-response";
 import { defineErrorMessage } from "@/shared/lib/defineErrorMessage";
 import { Genre } from "@/entities/genres/types/genre-response";
 import { genresService } from "@/entities/genres/api";
+import dayjs from "dayjs";
 
 export const MoviesPage = () => {
     const [totalPages, setTotalPages] = useState(0)
@@ -52,7 +53,7 @@ export const MoviesPage = () => {
         return {
             page: activePage,
             with_genres: selectedGenre,
-            primary_release_year: selectedReleaseYear,
+            primary_release_year: selectedReleaseYear && dayjs(selectedReleaseYear).format('YYYY'),
             ['vote_average.gte']: selectedRaitingFrom,
             ['vote_average.lte']: selectedRaitingTo,
             sort_by: selectedSort,
@@ -73,6 +74,10 @@ export const MoviesPage = () => {
         }
     }
 
+    useEffect(() => {
+        getGenders()
+    }, [])
+
     async function getGenders() {
         const { data: genresResponse } = await genresService.getAll()
         setGenres(genresResponse.genres)
@@ -91,9 +96,7 @@ export const MoviesPage = () => {
         getMovies(requestParams)
     }, [requestParams])
 
-    useEffect(() => {
-        getGenders()
-    }, [])
+
 
     return (
         <div className="w-full">
