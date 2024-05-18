@@ -5,6 +5,7 @@ import { Movie } from "../types/movie-response";
 import { Genre } from "@/entities/genres/types/genre-response";
 import { useMemo } from "react";
 import NotPoster from '@/app/assets/imgs/NotPoster.png'
+import dayjs from "dayjs";
 
 interface Props {
     movie: Movie
@@ -34,14 +35,14 @@ export const MovieCard = ({ movie, genres }: Props) => {
             <Paper p={24} radius="lg">
                 <Flex gap={16} direction={{ base: 'column', sm: 'row' }}>
                     <Image
-                        src={movie.backdrop_path ? `http://image.tmdb.org/t/p/w500${movie.backdrop_path}` : NotPoster}
-                        onClick={() => handleGoToMovieDetail(1)}
+                        src={movie.backdrop_path ? `http://image.tmdb.org/t/p/w500${movie.poster_path}` : NotPoster}
+                        onClick={() => handleGoToMovieDetail(movie.id)}
                         className="cursor-pointer w-[119px] h-[170px]" />
                     <Flex justify="space-between" className="w-full">
                         <Flex direction="column" justify="space-between">
                             <Flex direction="column" gap={8}>
-                                <Text c='#9854F6' fw={700} size="20px">{movie.title}</Text>
-                                <Text c='#7B7C88' size="16px">{movie.release_date}</Text>
+                                <Text c='#9854F6' fw={700} size="20px">{movie.original_title}</Text>
+                                <Text c='#7B7C88' size="16px">{dayjs(movie.release_date).format('YYYY')}</Text>
                                 <Flex gap={8} align="center">
                                     <Flex gap={4} align="center">
                                         <Rating size={28} count={1} value={1} readOnly />
