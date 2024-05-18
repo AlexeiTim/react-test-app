@@ -1,10 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import '@mantine/core/styles.css';
 import './App.css'
+
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Button, MantineProvider } from '@mantine/core'
 
 
 const MainPage = () => (
   <>
     <h1>Main page</h1>
+    <Button>Hello</Button>
   </>
 )
 
@@ -35,15 +39,17 @@ const NotFoundPage = () => (
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/movies" element={<MoviesPage />} />
-          <Route path="/reated-movies" element={<ReatedMovies />} />
-          <Route path="/movie/:id" element={<MoviePage />} />
-          <Route path='*' element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
+      <MantineProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/movies" element={<MoviesPage />} />
+            <Route path="/reated-movies" element={<ReatedMovies />} />
+            <Route path="/movie/:id" element={<MoviePage />} />
+            <Route path='*' element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </MantineProvider>
     </>
   )
 }
