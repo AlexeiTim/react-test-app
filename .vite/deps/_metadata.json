@@ -1,31 +1,37 @@
 {
-  "hash": "bcdf9241",
+  "hash": "ceba4317",
   "configHash": "ac5942a7",
-  "lockfileHash": "cd6c696b",
-  "browserHash": "95e126d6",
+  "lockfileHash": "ea764e0e",
+  "browserHash": "2be9991e",
   "optimized": {
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "27747403",
+      "fileHash": "5f8f87bd",
       "needsInterop": true
     },
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "9bbdfd4e",
+      "fileHash": "5bb80120",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "b2a3d866",
+      "fileHash": "8b623148",
       "needsInterop": true
     },
     "react-router-dom": {
       "src": "../../node_modules/react-router-dom/dist/index.js",
       "file": "react-router-dom.js",
-      "fileHash": "10b7c500",
+      "fileHash": "5eae4b4e",
+      "needsInterop": false
+    },
+    "@mantine/core": {
+      "src": "../../node_modules/@mantine/core/esm/index.mjs",
+      "file": "@mantine_core.js",
+      "fileHash": "1222c9bd",
       "needsInterop": false
     }
   },
