@@ -2,6 +2,7 @@ import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { MantineProvider } from '@mantine/core'
 
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import './App.css'
 import { MainPage } from '@/pages/Main';
 import { MoviesPage } from '@/pages/Movies';

@@ -1,49 +1,173 @@
-import { MovieCard } from "@/entities/movie";
-import { Button, Flex, Grid, Input, Pagination, Select } from "@mantine/core";
+import { MovieCard, moviesService } from "@/entities/movie";
+import { Button, ComboboxItem, Flex, Grid, Input, Notification, Pagination, Select } from "@mantine/core";
+import { YearPickerInput } from '@mantine/dates';
 import emptyMovies from '@/app/assets/imgs/emptyMovies.png'
+import { useEffect, useMemo, useState } from "react";
+import { IconX } from '@tabler/icons-react';
+import { AppLoader } from "@/shared/ui/AppLoader";
+import { Movie } from "@/entities/movie/types/movie-response";
+import { defineErrorMessage } from "@/shared/lib/defineErrorMessage";
+import { Genre } from "@/entities/genres/types/genre-response";
+import { genresService } from "@/entities/genres/api";
 
 export const MoviesPage = () => {
+    const [totalPages, setTotalPages] = useState(0)
+    const [activePage, setActivePage] = useState(1)
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [movies, setMovies] = useState<Movie[]>([])
+    const [genres, setGenres] = useState<Genre[]>([])
+    const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
+    const [selectedReleaseYear, setSelectedReleaseYear] = useState<string | null>(null)
+    const [selectedRaitingFrom, setSelectedRaitingFrom] = useState<string | null>(null)
+    const [selectedRaitingTo, setSelectedRaitingTo] = useState<string | null>(null)
+    const [selectedSort, setSelectedSort] = useState<string | null>(null)
 
-    const data = ['a', 'b']
-    const items = Array(10).fill(null)
+    const ratingsOptions = Array(10).fill(null).map((_, index) => String(index + 1))
+
+    const genreOptions = useMemo(() => {
+        return genres.map(g => ({ label: g.name, value: String(g.id) }))
+    }, [genres])
+
+    const SortOptions = [
+        'original_title.asc',
+        'original_title.desc',
+        'popularity.asc',
+        'popularity.desc',
+        'revenue.asc',
+        'revenue.desc',
+        'primary_release_date.asc',
+        'title.asc',
+        'title.desc',
+        'primary_release_date.desc',
+        'vote_average.asc',
+        'vote_average.desc',
+        'vote_count.asc',
+        'vote_count.desc'
+    ]
+
+
+
+    const requestParams = useMemo(() => {
+        return {
+            page: activePage,
+            with_genres: selectedGenre,
+            primary_release_year: selectedReleaseYear,
+            ['vote_average.gte']: selectedRaitingFrom,
+            ['vote_average.lte']: selectedRaitingTo,
+            sort_by: selectedSort,
+        }
+    }, [activePage, selectedGenre, selectedReleaseYear, selectedRaitingFrom, selectedRaitingTo, selectedSort])
+
+    async function getMovies(params: any) {
+        try {
+            setError(null)
+            setIsLoading(true)
+            const { data } = await moviesService.getAll(params)
+            setMovies(data.results)
+            setTotalPages(data.total_pages > 500 ? 500 : data.total_pages)
+        } catch (e) {
+            setError(defineErrorMessage(e))
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    async function getGenders() {
+        const { data: genresResponse } = await genresService.getAll()
+        setGenres(genresResponse.genres)
+    }
+
+    function handleResetFilters() {
+        console.log('reset')
+        setSelectedGenre(null)
+        setSelectedReleaseYear(null)
+        setSelectedRaitingFrom(null)
+        setSelectedRaitingTo(null)
+        setSelectedSort(null)
+    }
+
+    useEffect(() => {
+        getMovies(requestParams)
+    }, [requestParams])
+
+    useEffect(() => {
+        getGenders()
+    }, [])
 
     return (
         <div className="w-full">
+            {error && (<Notification icon={<IconX />} color="red" title={error} />)}
             <h1 className="text-[32px]/[140%] font-bold">Movies</h1>
-
             <Flex direction="column" gap={24}>
                 <Flex gap={16} align='end'>
-                    <Select label="Genres" data={data} placeholder="Select genres" />
-                    <Select label="Release year" data={data} placeholder="Select release year" />
+                    <Select
+                        label="Genres"
+                        placeholder="Select genre"
+                        data={genreOptions}
+                        value={selectedGenre ? selectedGenre : null}
+                        onChange={(_value, option) => setSelectedGenre(option.value)}
+                    />
+
+                    <YearPickerInput
+                        label="Release year"
+                        placeholder="Select release year"
+                        value={selectedReleaseYear}
+                        onChange={setSelectedReleaseYear}
+                    />
                     <Input.Wrapper label="Rating" className="w-[283px]">
                         <Flex gap={16}>
-                            <Input type="number" />
-                            <Input type="number" />
+                            <Select
+                                placeholder="From"
+                                value={selectedRaitingFrom}
+                                onChange={setSelectedRaitingFrom}
+                                data={ratingsOptions}
+                            />
+                            <Select
+                                placeholder="To"
+                                value={selectedRaitingTo}
+                                onChange={setSelectedRaitingTo}
+                                data={ratingsOptions}
+                            />
                         </Flex>
                     </Input.Wrapper>
 
-                    <Button variant="transparent" color="gray" radius="md">Reset filters</Button>
+                    <Button onClick={handleResetFilters} variant="transparent" color="gray" radius="md">Reset filters</Button>
                 </Flex>
 
                 <Flex justify="end">
-                    <Select label='Sort by' data={data} />
+                    <Select
+                        label='Sort by'
+                        placeholder="Select sort"
+                        data={SortOptions}
+                        value={selectedSort}
+                        onChange={setSelectedSort}
+                    />
                 </Flex>
-                {items.length ? (
+                {/* Контент */}
+                {!isLoading ? (
                     <>
-                        <Grid columns={12} >
-                            {items.map(() => (
-                                <Grid.Col span={{ base: 12, sm: 6 }}>
-                                    <MovieCard />
-                                </Grid.Col>
-                            ))}
-                        </Grid>
-                        <Flex justify="end">
-                            <Pagination total={3} color="grape" />
-                        </Flex>
+                        {movies.length ? (
+                            <>
+                                <Grid columns={12} >
+                                    {movies.map((movie) => (
+                                        <Grid.Col span={{ base: 12, sm: 6 }}>
+                                            <MovieCard movie={movie} genres={genres} />
+                                        </Grid.Col>
+                                    ))}
+                                </Grid>
+                                <Flex justify="end">
+                                    <Pagination total={totalPages} value={activePage} onChange={setActivePage} color="grape" />
+                                </Flex>
+                            </>
+                        ) : (
+                            <div className="w-[50%] h-[300px] m-auto" style={{ backgroundImage: `url(${emptyMovies})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }} />
+                        )}
                     </>
                 ) : (
-                    <div className="w-[50%] h-[300px] m-auto" style={{ backgroundImage: `url(${emptyMovies})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }} />
+                    <AppLoader />
                 )}
+
             </Flex>
         </div >
     );
