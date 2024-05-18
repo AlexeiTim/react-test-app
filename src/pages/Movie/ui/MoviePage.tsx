@@ -11,13 +11,18 @@ import { useMemo } from "react";
 import NotPoster from '@/app/assets/imgs/NotPoster.png'
 import dayjs from "dayjs";
 import NotCompanyLogo from '@/app/assets/imgs/NotCompanyLogo.png'
+import { favoriteMoviesStorageService } from "@/entities/movie/storage";
+import { MovieFavorite } from "@/entities/movie/types/movie-favorite";
+import { MovieDetailViewDTO } from "@/entities/movie/dto/movie-detail-to-view-dto";
 
 export const MoviePage = () => {
     const params = useParams()
     const [movie, setMovie] = useState<MovieDetailResponse | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [selectedRating, setSelectedRating] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
     const [opened, { open, close }] = useDisclosure(false);
+    const [favorite, setFavorite] = useState<MovieFavorite | null>(null)
 
     const currentGenres = useMemo(() => {
         if (!movie) return
@@ -40,12 +45,22 @@ export const MoviePage = () => {
         return date
     }, [movie])
 
+    useEffect(() => {
+        if (!params.id) return
+        if (!favoriteMoviesStorageService.init)
+            favoriteMoviesStorageService.initFavorites()
+
+        const favoriteMap = favoriteMoviesStorageService.favoritesMap.get(+params.id)
+        if (!favoriteMap) return
+        setFavorite(favoriteMap)
+    }, [params])
+
 
     useEffect(() => {
         if (!params.id) return
 
         getMovie(+params.id)
-    }, [params.id])
+    }, [params])
 
     const duration = useMemo(() => {
         if (!movie) return ''
@@ -70,6 +85,29 @@ export const MoviePage = () => {
         } finally {
             setIsLoading(false)
         }
+    }
+
+    function handleAddToStorageFavoriteMovie() {
+        if (!selectedRating || !params.id || !movie) return
+
+        const viewMovie = new MovieDetailViewDTO(movie)
+
+        const favoriteMovie = {
+            ...viewMovie,
+            favoriteRating: selectedRating
+        }
+        favoriteMoviesStorageService.save(favoriteMovie)
+        setFavorite(favoriteMovie)
+        close()
+    }
+
+    function handleRemoveRating() {
+        if (!params.id) return
+
+        favoriteMoviesStorageService.delete(+params.id)
+        setSelectedRating(0)
+        setFavorite(null)
+        close()
     }
     return (
         <div>
@@ -130,7 +168,10 @@ export const MoviePage = () => {
                                                     </Flex>
                                                 </Text>
                                             </Flex>
-                                            <Rating count={1} size={28} onClick={open} />
+                                            <Flex align="center" justify="start" gap={4}>
+                                                <Rating color="grape" count={1} value={favorite ? favorite.favoriteRating : 0} size={28} onClick={open} />
+                                                {favorite && <Text fw={700}>{favorite.favoriteRating}</Text>}
+                                            </Flex>
                                         </Flex>
                                     </Flex>
                                 </Paper>
@@ -166,7 +207,7 @@ export const MoviePage = () => {
                                                     <>
                                                         {movie.production_companies.map((c) => {
                                                             return (
-                                                                <Flex gap={8} align="center">
+                                                                <Flex key={c.id} gap={8} align="center">
                                                                     <div className="w-[40px] h-[40px] rounded-[50%]" style={{
                                                                         backgroundImage: c.logo_path ? `url('http://image.tmdb.org/t/p/w500${c.logo_path}')` : `url('${NotCompanyLogo}')`,
                                                                         backgroundPosition: 'center',
@@ -192,10 +233,10 @@ export const MoviePage = () => {
                                     <div className="mt-4">
                                         <Flex direction="column" gap={16}>
                                             <Text fw={600} size="16px">Coco</Text>
-                                            <Rating count={10} size={28} />
+                                            <Rating count={10} size={28} value={selectedRating} onChange={setSelectedRating} />
                                             <Flex>
-                                                <Button color="grape">Save</Button>
-                                                <Button variant="transparent" color="grape">Remove rating</Button>
+                                                <Button onClick={handleAddToStorageFavoriteMovie} color="grape">Save</Button>
+                                                <Button onClick={handleRemoveRating} variant="transparent" color="grape">Remove rating</Button>
                                             </Flex>
                                         </Flex>
                                     </div>

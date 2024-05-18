@@ -33,6 +33,7 @@ class FavoriteMoviesStorage {
         this.init = true
     }
 
+
     get favorites(): MovieFavorite[] {
         if (!this.init)
             this.initFavorites()
