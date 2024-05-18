@@ -24,7 +24,7 @@ export interface Request {
   method?: string
   responseType?: ResponseType
   headers?: AxiosRequestHeaders
-  params?: unknown & { api_key: string }
+  params?: unknown & { api_key?: string, append_to_response?: string }
   data?: unknown
   paramsSerializer?: (params: object | string) => string
 }
