@@ -1,11 +1,11 @@
 import { STORAGE_KEYS } from '@/shared/config/storage-keys';
-import { Movie } from './../types/movie-response.d';
+import { MovieFavorite } from '../types/movie-favorite';
 
 class FavoriteMoviesStorage {
-    favoritesMap = new Map()
+    favoritesMap: Map<number, MovieFavorite> = new Map()
     init = false
 
-    save(favoriteMovie: Movie & { favoriteRating: number }) {
+    save(favoriteMovie: MovieFavorite) {
         if (!this.init)
             this.initFavorites()
 
@@ -26,14 +26,14 @@ class FavoriteMoviesStorage {
     initFavorites() {
         const favorites = localStorage.getItem(STORAGE_KEYS.FAVORITE_MOVIES)
         if (favorites) {
-            const parseFavorites = JSON.parse(favorites)
+            const parseFavorites: MovieFavorite[] = JSON.parse(favorites)
             parseFavorites.forEach(f => this.favoritesMap.set(f.id, f))
         }
 
         this.init = true
     }
 
-    get favorites() {
+    get favorites(): MovieFavorite[] {
         if (!this.init)
             this.initFavorites()
 

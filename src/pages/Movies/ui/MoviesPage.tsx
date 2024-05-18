@@ -11,6 +11,7 @@ import { Genre } from "@/entities/genres/types/genre-response";
 import { genresService } from "@/entities/genres/api";
 import dayjs from "dayjs";
 import { favoriteMoviesStorageService } from "@/entities/movie/storage";
+import { MovieFavorite } from "@/entities/movie/types/movie-favorite";
 
 export const MoviesPage = () => {
     const [totalPages, setTotalPages] = useState(0)
@@ -24,11 +25,11 @@ export const MoviesPage = () => {
     const [selectedRaitingFrom, setSelectedRaitingFrom] = useState<string | null>(null)
     const [selectedRaitingTo, setSelectedRaitingTo] = useState<string | null>(null)
     const [selectedSort, setSelectedSort] = useState<string | null>(null)
-    const [favorites, setFavorites] = useState([])
+    const [favorites, setFavorites] = useState<MovieFavorite[]>([])
 
     useEffect(() => {
         setFavorites(favoriteMoviesStorageService.favorites)
-    })
+    }, [])
 
     const ratingsOptions = Array(10).fill(null).map((_, index) => String(index + 1))
 
@@ -161,7 +162,12 @@ export const MoviesPage = () => {
                                 <Grid columns={12} >
                                     {movies.map((movie) => (
                                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                                            <MovieCard movie={movie} genres={genres} favorite={favoriteMoviesStorageService.favoritesMap.get(movie.id)} />
+                                            <MovieCard
+                                                changeFavorite={() => setFavorites([...favoriteMoviesStorageService.favorites])}
+                                                movie={movie}
+                                                genres={genres}
+                                                favorite={favoriteMoviesStorageService.favoritesMap.get(movie.id)}
+                                            />
                                         </Grid.Col>
                                     ))}
                                 </Grid>

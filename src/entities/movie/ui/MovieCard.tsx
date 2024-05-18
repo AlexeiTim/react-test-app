@@ -3,19 +3,20 @@ import { useNavigate } from "react-router-dom"
 import { useDisclosure } from "@mantine/hooks";
 import { Movie } from "../types/movie-response";
 import { Genre } from "@/entities/genres/types/genre-response";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import NotPoster from '@/app/assets/imgs/NotPoster.png'
 import dayjs from "dayjs";
-import { STORAGE_KEYS } from "@/shared/config/storage-keys";
 import { favoriteMoviesStorageService } from "../storage";
+import { MovieFavorite } from "../types/movie-favorite";
 
 interface Props {
     movie: Movie
     genres: Genre[]
-    favorite?: Movie & { favoriteRating: number }
+    favorite?: MovieFavorite
+    changeFavorite?: () => void
 }
 
-export const MovieCard = ({ movie, genres, favorite }: Props) => {
+export const MovieCard = ({ movie, genres, favorite, changeFavorite = () => { } }: Props) => {
     const [opened, { open, close }] = useDisclosure(false);
     const [selectedRaiting, setSelectedRaiting] = useState(0)
     const navigate = useNavigate()
@@ -46,12 +47,14 @@ export const MovieCard = ({ movie, genres, favorite }: Props) => {
             favoriteRating: selectedRaiting
         }
         favoriteMoviesStorageService.save(favoriteMovie)
+        changeFavorite()
         close()
     }
 
     function handleRemoveRating() {
         favoriteMoviesStorageService.delete(movie.id)
         setSelectedRaiting(0)
+        changeFavorite()
         close()
     }
 

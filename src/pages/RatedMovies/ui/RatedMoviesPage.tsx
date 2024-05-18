@@ -1,25 +1,23 @@
-import { MovieCard, moviesService } from "@/entities/movie"
-import { Button, Flex, Grid, Input, Pagination, Text, Image, Notification } from "@mantine/core"
-import { IconSearch, IconX } from '@tabler/icons-react';
+import { MovieCard } from "@/entities/movie"
+import { Button, Flex, Grid, Input, Pagination, Text, Image } from "@mantine/core"
+import { IconSearch } from '@tabler/icons-react';
 import EmptyRatedImage from '@/app/assets/imgs/EmptyRatedImage.png'
 import { useEffect, useMemo, useState } from "react";
-import { Movie } from "@/entities/movie/types/movie-response";
 import { Genre } from "@/entities/genres/types/genre-response";
-import { AppLoader } from "@/shared/ui/AppLoader";
-import { defineErrorMessage } from "@/shared/lib/defineErrorMessage";
 import { genresService } from "@/entities/genres/api";
 import { favoriteMoviesStorageService } from "@/entities/movie/storage";
 import { useNavigate } from "react-router-dom";
+import { MovieFavorite } from "@/entities/movie/types/movie-favorite";
 
 export const RatedMoviesPage = () => {
     const [totalPages, setTotalPages] = useState(0)
     const [activePage, setActivePage] = useState(1)
     const [genres, setGenres] = useState<Genre[]>([])
-    const [favoritesMovies, setFavoritesMovies] = useState([])
+    const [favoritesMovies, setFavoritesMovies] = useState<MovieFavorite[]>([])
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
 
-    function definePagination(favoritesMovies) {
+    function definePagination(favoritesMovies: MovieFavorite[]) {
         const totalPages = Math.floor(favoritesMovies.length / 20)
         console.log(totalPages)
         setTotalPages(totalPages)
@@ -29,7 +27,6 @@ export const RatedMoviesPage = () => {
         setFavoritesMovies([...favoriteMoviesStorageService.favorites])
         definePagination(favoriteMoviesStorageService.favorites)
     }, [])
-
 
     useEffect(() => {
         getGenders()
@@ -50,12 +47,18 @@ export const RatedMoviesPage = () => {
         setGenres(genresResponse.genres)
     }
 
+    function handleChangeFavorite() {
+        setFavoritesMovies([...favoriteMoviesStorageService.favorites])
+    }
+
     return (
         <div className="w-full">
-            <Flex align="center" justify="space-between" mb={40} className="w-full">
-                <Text fw={600} size="32px">Rated movies</Text>
-                <SearchRatedMoviesInput search={search} setSearch={setSearch} />
-            </Flex>
+            {favoritesMovies.length && (
+                <Flex align="center" justify="space-between" mb={40} className="w-full">
+                    <Text fw={600} size="32px">Rated movies</Text>
+                    <SearchRatedMoviesInput search={search} setSearch={setSearch} />
+                </Flex>
+            )}
             {(!searchedFavoritesMovies.length && favoritesMovies.length) && (<Text className="text-center">No Search</Text>)}
             {favoritesMovies.length ? (
                 <Flex direction="column" gap={40}>
@@ -63,7 +66,12 @@ export const RatedMoviesPage = () => {
                         <Grid columns={12} >
                             {searchedFavoritesMovies.map((movie) => (
                                 <Grid.Col span={{ base: 12, sm: 6 }}>
-                                    <MovieCard movie={movie} genres={genres} favorite={favoriteMoviesStorageService.favoritesMap.get(movie.id)} />
+                                    <MovieCard
+                                        changeFavorite={handleChangeFavorite}
+                                        movie={movie}
+                                        genres={genres}
+                                        favorite={favoriteMoviesStorageService.favoritesMap.get(movie.id)}
+                                    />
                                 </Grid.Col>
                             ))}
                         </Grid>
