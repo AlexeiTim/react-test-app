@@ -103,8 +103,6 @@ export const MoviesPage = () => {
         getMovies(requestParams)
     }, [requestParams])
 
-
-
     return (
         <div className="w-full">
             {error && (<Notification icon={<IconX />} color="red" title={error} />)}
