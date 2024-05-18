@@ -168,10 +168,12 @@ export const MoviePage = () => {
                                                     </Flex>
                                                 </Text>
                                             </Flex>
-                                            <Flex align="center" justify="start" gap={4}>
-                                                <Rating color="grape" count={1} value={favorite ? favorite.favoriteRating : 0} size={28} onClick={open} />
-                                                {favorite && <Text fw={700}>{favorite.favoriteRating}</Text>}
-                                            </Flex>
+                                            <div>
+                                                <Flex align="center" justify="start" gap={4}>
+                                                    <Rating color="grape" count={1} value={favorite ? favorite.favoriteRating : 0} size={28} onClick={open} />
+                                                    {favorite && <Text fw={700}>{favorite.favoriteRating}</Text>}
+                                                </Flex>
+                                            </div>
                                         </Flex>
                                     </Flex>
                                 </Paper>
