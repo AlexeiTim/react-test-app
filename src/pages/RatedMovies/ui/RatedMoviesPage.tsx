@@ -2,7 +2,7 @@ import { MovieCard } from "@/entities/movie"
 import { Button, Flex, Grid, Input, Pagination, Text, Image } from "@mantine/core"
 import { IconSearch } from '@tabler/icons-react';
 import EmptyRatedImage from '@/app/assets/imgs/EmptyRatedImage.png'
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Genre } from "@/entities/genres/types/genre-response";
 import { genresService } from "@/entities/genres/api";
 import { favoriteMoviesStorageService } from "@/entities/movie/storage";
@@ -19,11 +19,13 @@ export const RatedMoviesPage = () => {
     const navigate = useNavigate()
 
     function definePagination(favoritesMovies: MovieFavorite[]) {
-        const totalPages = Math.floor(favoritesMovies.length / 20)
+        const totalPages = Math.ceil(favoritesMovies.length / 20)
         setTotalPages(totalPages)
     }
 
     function handleSearchFavoriteMovies() {
+        setActivePage(1)
+        if (!search) return setSearchedFavoritesMovies(favoritesMovies)
         return setSearchedFavoritesMovies(favoritesMovies.filter(f => f.original_title.toLowerCase().indexOf(search.toLocaleLowerCase()) >= 0))
     }
 
@@ -50,9 +52,14 @@ export const RatedMoviesPage = () => {
         setFavoritesMovies([...favoriteMoviesStorageService.favorites])
     }
 
+    const resultFavoriteMovies = useMemo(() => {
+        setTotalPages(Math.ceil(searchedFavoritesMovies.length / 19))
+        return searchedFavoritesMovies.slice((activePage - 1) * 20, activePage * 20)
+    }, [activePage, searchedFavoritesMovies])
+
     return (
         <div className="w-full">
-            {favoritesMovies.length && (
+            {!!favoritesMovies.length && (
                 <Flex align="center" justify="space-between" mb={40} className="w-full">
                     <Text fw={600} size="32px">Rated movies</Text>
                     <SearchRatedMoviesInput
@@ -62,13 +69,13 @@ export const RatedMoviesPage = () => {
                     />
                 </Flex>
             )}
-            {(!searchedFavoritesMovies.length && favoritesMovies.length) && (<Text className="text-center">No Search</Text>)}
-            {favoritesMovies.length ? (
+            {(!resultFavoriteMovies.length && !!favoritesMovies.length) && (<Text className="text-center">No Search</Text>)}
+            {resultFavoriteMovies.length ? (
                 <Flex direction="column" gap={40}>
                     <Flex direction="column" gap={24}>
                         <Grid columns={12} >
-                            {searchedFavoritesMovies.map((movie) => (
-                                <Grid.Col span={{ base: 12, sm: 6 }}>
+                            {resultFavoriteMovies.map((movie) => (
+                                <Grid.Col key={movie.id} span={{ base: 12, sm: 6 }}>
                                     <MovieCard
                                         changeFavorite={handleChangeFavorite}
                                         movie={movie}
@@ -78,9 +85,9 @@ export const RatedMoviesPage = () => {
                                 </Grid.Col>
                             ))}
                         </Grid>
-                        <Flex justify="center">
+                        {!!resultFavoriteMovies.length && (<Flex justify="center">
                             <Pagination total={totalPages} value={activePage} onChange={setActivePage} color="grape" />
-                        </Flex>
+                        </Flex>)}
                     </Flex>
                 </Flex>
             ) : (
