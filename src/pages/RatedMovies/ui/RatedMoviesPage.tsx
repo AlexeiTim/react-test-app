@@ -2,7 +2,7 @@ import { MovieCard } from "@/entities/movie"
 import { Button, Flex, Grid, Input, Pagination, Text, Image } from "@mantine/core"
 import { IconSearch } from '@tabler/icons-react';
 import EmptyRatedImage from '@/app/assets/imgs/EmptyRatedImage.png'
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Genre } from "@/entities/genres/types/genre-response";
 import { genresService } from "@/entities/genres/api";
 import { favoriteMoviesStorageService } from "@/entities/movie/storage";
@@ -14,17 +14,22 @@ export const RatedMoviesPage = () => {
     const [activePage, setActivePage] = useState(1)
     const [genres, setGenres] = useState<Genre[]>([])
     const [favoritesMovies, setFavoritesMovies] = useState<MovieFavorite[]>([])
+    const [searchedFavoritesMovies, setSearchedFavoritesMovies] = useState<MovieFavorite[]>([])
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
 
     function definePagination(favoritesMovies: MovieFavorite[]) {
         const totalPages = Math.floor(favoritesMovies.length / 20)
-        console.log(totalPages)
         setTotalPages(totalPages)
+    }
+
+    function handleSearchFavoriteMovies() {
+        return setSearchedFavoritesMovies(favoritesMovies.filter(f => f.original_title.toLowerCase().indexOf(search.toLocaleLowerCase()) >= 0))
     }
 
     useEffect(() => {
         setFavoritesMovies([...favoriteMoviesStorageService.favorites])
+        setSearchedFavoritesMovies([...favoriteMoviesStorageService.favorites])
         definePagination(favoriteMoviesStorageService.favorites)
     }, [])
 
@@ -35,12 +40,6 @@ export const RatedMoviesPage = () => {
     function handleGoToMovies() {
         navigate('/movies')
     }
-
-    const searchedFavoritesMovies = useMemo(() => {
-        if (!search) return favoritesMovies
-
-        return favoritesMovies.filter(f => f.original_title.toLowerCase().indexOf(search.toLocaleLowerCase()) >= 0)
-    }, [search, favoritesMovies])
 
     async function getGenders() {
         const { data: genresResponse } = await genresService.getAll()
@@ -56,7 +55,11 @@ export const RatedMoviesPage = () => {
             {favoritesMovies.length && (
                 <Flex align="center" justify="space-between" mb={40} className="w-full">
                     <Text fw={600} size="32px">Rated movies</Text>
-                    <SearchRatedMoviesInput search={search} setSearch={setSearch} />
+                    <SearchRatedMoviesInput
+                        search={search}
+                        setSearch={setSearch}
+                        searchFavoriteMovies={handleSearchFavoriteMovies}
+                    />
                 </Flex>
             )}
             {(!searchedFavoritesMovies.length && favoritesMovies.length) && (<Text className="text-center">No Search</Text>)}
@@ -100,8 +103,9 @@ export const RatedMoviesPage = () => {
 interface Props {
     search: string
     setSearch: (value: string) => void
+    searchFavoriteMovies: () => void
 }
-const SearchRatedMoviesInput = ({ search, setSearch }: Props) => {
+const SearchRatedMoviesInput = ({ search, setSearch, searchFavoriteMovies }: Props) => {
     return (
         <div className="relative">
             <Input
@@ -113,7 +117,7 @@ const SearchRatedMoviesInput = ({ search, setSearch }: Props) => {
                 placeholder="Search movie title"
                 leftSection={<IconSearch size={16} />}
             />
-            <Button className="w-[90px] absolute cursor-pointer top-[7px]" color="grape" style={{ width: '90px', right: '12px', zIndex: 2 }}>Search</Button>
+            <Button onClick={searchFavoriteMovies} className="w-[90px] absolute cursor-pointer top-[7px]" color="grape" style={{ width: '90px', right: '12px', zIndex: 2 }}>Search</Button>
         </div>
     )
 }
