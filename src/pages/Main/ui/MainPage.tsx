@@ -1,9 +1,9 @@
-import { AppShell, Burger, Tabs, Text, Flex } from "@mantine/core";
+import { AppShell, Burger, Tabs, Flex } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { defineCurrentTabName } from "../lib/define-current-tab-name";
-import { LogoIcon } from "@/shared/icons/LogoIcon";
+import { AppLogo } from "@/shared/ui/AppLogo";
 
 export const MainPage = () => {
     const navigate = useNavigate();
@@ -45,10 +45,7 @@ export const MainPage = () => {
             </AppShell.Header>
             <AppShell.Navbar className="bg-bg-nav" p="md">
                 <Flex direction="column" gap={80}>
-                    <Flex gap={12} align="center">
-                        <LogoIcon />
-                        <Text c="#9854F6" fw={700} size="24px">ArrowFlicks</Text>
-                    </Flex>
+                    <AppLogo />
                     <Tabs color="grape" variant="pills" orientation="vertical" value={activeTab} onChange={handleChangeActiveTab} className="m-auto w-full">
                         <Tabs.List className="flex flex-col gap-4 w-full">
                             <Tabs.Tab value="movies" >

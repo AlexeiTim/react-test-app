@@ -1,3 +1,3 @@
 export const defineCurrentTabName = (path: string) => {
-    return path === '/movies' ? 'movies' : 'rated-movies'
+    return path === '/rated-movies' ? 'rated-movies' : 'movies'
 }
