@@ -66,7 +66,7 @@ export const MoviePage = () => {
         try {
             setIsLoading(true)
             setError(null)
-            const { data } = await moviesService.getOne(id)
+            const { data } = await moviesService.getMovie(id)
             setMovie(data)
         } catch (e) {
             setError(defineErrorMessage(e))
