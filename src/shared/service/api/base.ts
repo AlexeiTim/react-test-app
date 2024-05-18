@@ -3,7 +3,8 @@ import { API_METHODS, SERVICE_METHOD_ERRORS } from '@/shared/config/service'
 import type { BaseResponse } from '@/shared/types/api'
 
 function clearEmptyParams(params: object) {
-    return Object.fromEntries(Object.entries(params).filter((array) => !!array[1] || typeof array[1] === 'boolean'))
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return Object.fromEntries(Object.entries(params).filter(([_, value]) => !!value || typeof value === 'boolean'))
 }
 
 export class BaseApiService<T> {
