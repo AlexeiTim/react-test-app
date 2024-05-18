@@ -1,5 +1,5 @@
 import { MovieCard, moviesService } from "@/entities/movie";
-import { Button, ComboboxItem, Flex, Grid, Input, Notification, Pagination, Select, Text } from "@mantine/core";
+import { Button, Flex, Grid, Input, Notification, Pagination, Select } from "@mantine/core";
 import { YearPickerInput } from '@mantine/dates';
 import emptyMovies from '@/app/assets/imgs/emptyMovies.png'
 import { useEffect, useMemo, useState } from "react";

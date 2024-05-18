@@ -32,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.RATED_MOVIES,
         element: <RatedMoviesPage />
+      },
+      {
+        path: ROUTES.RATED_MOVIES_DETAIL,
+        element: <MoviePage />
       }
     ]
   },

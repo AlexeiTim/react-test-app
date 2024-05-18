@@ -1,5 +1,5 @@
 import { Button, Divider, Flex, Image, Modal, Paper, Rating, Text } from "@mantine/core";
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useDisclosure } from "@mantine/hooks";
 import { Movie } from "../types/movie-response";
 import { Genre } from "@/entities/genres/types/genre-response";
@@ -20,9 +20,10 @@ export const MovieCard = ({ movie, genres, favorite, changeFavorite = () => { } 
     const [opened, { open, close }] = useDisclosure(false);
     const [selectedRaiting, setSelectedRaiting] = useState(0)
     const navigate = useNavigate()
+    const location = useLocation()
 
     function handleGoToMovieDetail(id: number) {
-        navigate(`/movies/${id}`)
+        navigate(location.pathname.includes('rated') ? `/rated-movies/${id}` : `/movies/${id}`)
     }
 
     const currentGenres = useMemo(() => {
