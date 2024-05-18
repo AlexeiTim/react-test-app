@@ -11,12 +11,7 @@ function clearToken() {
     localStorage.removeItem('token')
 }
 
-const mapUrl = {
-    local: `${import.meta.env.VITE_APP_API_URL}`,
-    prod: `${window.location.origin}/backend`,
-}
-
-const apiBaseURL = window.location.hostname === 'localhost' ? mapUrl.local : mapUrl.prod
+const apiBaseURL = `${import.meta.env.VITE_APP_API_URL}`
 
 axios.defaults.baseURL = apiBaseURL
 
