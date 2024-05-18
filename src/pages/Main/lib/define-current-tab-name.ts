@@ -1,3 +1,3 @@
 export const defineCurrentTabName = (path: string) => {
-    return path === '/rated-movies' ? 'rated-movies' : 'movies'
+    return path.includes('rated') ? 'rated-movies' : 'movies'
 }

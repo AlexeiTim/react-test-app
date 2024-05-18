@@ -15,7 +15,7 @@ export const MainPage = () => {
     useEffect(() => {
         const activeTabName = defineCurrentTabName(location.pathname)
         setActiveTab(activeTabName)
-    }, [])
+    }, [location])
 
     /** При клике на таб, изменяет активный таб и рендерит дочерний компонент маршрута */
     function handleChangeActiveTab(tabName: string | null): void {

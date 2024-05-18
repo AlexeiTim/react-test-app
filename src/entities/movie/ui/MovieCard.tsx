@@ -1,23 +1,29 @@
 import { Button, Divider, Flex, Image, Modal, Paper, Rating, Text } from "@mantine/core";
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useDisclosure } from "@mantine/hooks";
 import { Movie } from "../types/movie-response";
 import { Genre } from "@/entities/genres/types/genre-response";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import NotPoster from '@/app/assets/imgs/NotPoster.png'
 import dayjs from "dayjs";
+import { favoriteMoviesStorageService } from "../storage";
+import { MovieFavorite } from "../types/movie-favorite";
 
 interface Props {
     movie: Movie
     genres: Genre[]
+    favorite?: MovieFavorite
+    changeFavorite?: () => void
 }
 
-export const MovieCard = ({ movie, genres }: Props) => {
+export const MovieCard = ({ movie, genres, favorite, changeFavorite = () => { } }: Props) => {
     const [opened, { open, close }] = useDisclosure(false);
+    const [selectedRaiting, setSelectedRaiting] = useState(0)
     const navigate = useNavigate()
+    const location = useLocation()
 
     function handleGoToMovieDetail(id: number) {
-        navigate(`/movies/${id}`)
+        navigate(location.pathname.includes('rated') ? `/rated-movies/${id}` : `/movies/${id}`)
     }
 
     const currentGenres = useMemo(() => {
@@ -29,6 +35,29 @@ export const MovieCard = ({ movie, genres }: Props) => {
         const calcCount = movie.vote_count / 1000
         return calcCount > 1 ? calcCount.toFixed(2) + 'K' : movie.vote_count
     }, [movie.vote_count])
+
+    function handleOpenRaitingModal() {
+        open()
+    }
+
+    function handleAddToStorageFavoriteMovie() {
+        if (!selectedRaiting) return
+
+        const favoriteMovie = {
+            ...movie,
+            favoriteRating: selectedRaiting
+        }
+        favoriteMoviesStorageService.save(favoriteMovie)
+        changeFavorite()
+        close()
+    }
+
+    function handleRemoveRating() {
+        favoriteMoviesStorageService.delete(movie.id)
+        setSelectedRaiting(0)
+        changeFavorite()
+        close()
+    }
 
     return (
         <div>
@@ -58,7 +87,12 @@ export const MovieCard = ({ movie, genres }: Props) => {
                                 </Flex>
                             </Text>
                         </Flex>
-                        <Rating count={1} size={28} onClick={open} />
+                        <div>
+                            <Flex align="center" justify="start" gap={4}>
+                                <Rating color="grape" count={1} value={favorite ? favorite.favoriteRating : 0} size={28} onClick={handleOpenRaitingModal} />
+                                {favorite && <Text fw={700}>{favorite.favoriteRating}</Text>}
+                            </Flex>
+                        </div>
                     </Flex>
                 </Flex>
             </Paper>
@@ -67,11 +101,13 @@ export const MovieCard = ({ movie, genres }: Props) => {
                     <Divider />
                     <div className="mt-4">
                         <Flex direction="column" gap={16}>
-                            <Text fw={600} size="16px">Coco</Text>
-                            <Rating count={10} size={28} />
+                            <Text fw={600} size="16px">
+                                {movie.original_title}
+                            </Text>
+                            <Rating value={favorite?.favoriteRating ? favorite?.favoriteRating : selectedRaiting} onChange={setSelectedRaiting} count={10} size={28} />
                             <Flex>
-                                <Button color="grape">Save</Button>
-                                <Button variant="transparent" color="grape">Remove rating</Button>
+                                <Button onClick={handleAddToStorageFavoriteMovie} color="grape">Save</Button>
+                                <Button onClick={handleRemoveRating} variant="transparent" color="grape">Remove rating</Button>
                             </Flex>
                         </Flex>
                     </div>
