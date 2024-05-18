@@ -1,21 +1,28 @@
 import { Anchor, Breadcrumbs } from "@mantine/core";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const MovieDetailBreadcrumbs = () => {
+interface Props {
+    originalTitle?: string
+}
+
+export const MovieDetailBreadcrumbs = (props: Props) => {
     const navigate = useNavigate()
 
     function handleGoTo(path: string) {
         navigate(path)
     }
 
-    const items = [
-        { title: 'movies', href: '/movies' },
-        { title: 'Mantine hooks', href: '#' },
-    ].map((item, index) => (
-        <Anchor onClick={() => handleGoTo(item.href)} key={index}>
-            {item.title}
-        </Anchor>
-    ));
+    const items = useMemo(() => {
+        return [
+            { title: 'movies', href: '/movies' },
+            { title: props.originalTitle, href: '#' },
+        ].map((item, index) => (
+            <Anchor onClick={() => handleGoTo(item.href)} key={index}>
+                {item.title}
+            </Anchor>
+        ));
+    }, [props.originalTitle])
 
     return (
         <Breadcrumbs>{items}</Breadcrumbs>
