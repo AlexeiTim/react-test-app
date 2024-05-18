@@ -1,5 +1,5 @@
 import { MovieCard, moviesService } from "@/entities/movie";
-import { Button, ComboboxItem, Flex, Grid, Input, Notification, Pagination, Select } from "@mantine/core";
+import { Button, ComboboxItem, Flex, Grid, Input, Notification, Pagination, Select, Text } from "@mantine/core";
 import { YearPickerInput } from '@mantine/dates';
 import emptyMovies from '@/app/assets/imgs/emptyMovies.png'
 import { useEffect, useMemo, useState } from "react";
@@ -10,6 +10,7 @@ import { defineErrorMessage } from "@/shared/lib/defineErrorMessage";
 import { Genre } from "@/entities/genres/types/genre-response";
 import { genresService } from "@/entities/genres/api";
 import dayjs from "dayjs";
+import { favoriteMoviesStorageService } from "@/entities/movie/storage";
 
 export const MoviesPage = () => {
     const [totalPages, setTotalPages] = useState(0)
@@ -23,6 +24,11 @@ export const MoviesPage = () => {
     const [selectedRaitingFrom, setSelectedRaitingFrom] = useState<string | null>(null)
     const [selectedRaitingTo, setSelectedRaitingTo] = useState<string | null>(null)
     const [selectedSort, setSelectedSort] = useState<string | null>(null)
+    const [favorites, setFavorites] = useState([])
+
+    useEffect(() => {
+        setFavorites(favoriteMoviesStorageService.favorites)
+    })
 
     const ratingsOptions = Array(10).fill(null).map((_, index) => String(index + 1))
 
@@ -155,7 +161,7 @@ export const MoviesPage = () => {
                                 <Grid columns={12} >
                                     {movies.map((movie) => (
                                         <Grid.Col span={{ base: 12, sm: 6 }}>
-                                            <MovieCard movie={movie} genres={genres} />
+                                            <MovieCard movie={movie} genres={genres} favorite={favoriteMoviesStorageService.favoritesMap.get(movie.id)} />
                                         </Grid.Col>
                                     ))}
                                 </Grid>
