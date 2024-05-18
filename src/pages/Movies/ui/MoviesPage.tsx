@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import { IconX } from '@tabler/icons-react';
 import { AppLoader } from "@/shared/ui/AppLoader";
 import { Movie } from "@/entities/movie/types/movie-response";
-import { defineErrorMessage } from "@/shared/lib/defineErrorMessage";
 import { Genre } from "@/entities/genres/types/genre-response";
 import { genresService } from "@/entities/genres/api";
 import dayjs from "dayjs";
@@ -76,7 +75,7 @@ export const MoviesPage = () => {
             setMovies(data.results)
             setTotalPages(data.total_pages > 500 ? 500 : data.total_pages)
         } catch (e) {
-            setError(defineErrorMessage(e))
+            setError('Request Error')
         } finally {
             setIsLoading(false)
         }
