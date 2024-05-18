@@ -4,8 +4,8 @@
 
 @font-face {
     font-family: "Inter";
-    src: url("@/app/assets/fonts/Inter-VariableFont_wght.ttf");
-  }
+    src: url("./fonts/Inter-VariableFont_wght.ttf");
+}
 
 * {
     box-sizing: border-box;
