@@ -16,7 +16,7 @@ export const RatedMovies = ({ movies, genres, changeFavorite }: Props) => {
             {movies.map((movie) => (
                 <Grid.Col
                     key={movie.id}
-                    span={{ base: 12, sm: 6 }}
+                    span={{ base: 12, lg: 6 }}
                 >
                     <MovieCard
                         changeFavorite={changeFavorite}

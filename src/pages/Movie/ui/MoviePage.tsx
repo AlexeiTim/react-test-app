@@ -87,7 +87,7 @@ export const MoviePage = () => {
         <div>
             {error && <Notification title={error} icon={<IconX />} color="red" />}
             {movie && (
-                <div className="h-[400px] w-[800px]">
+                <div >
                     <Flex direction="column" gap={20}>
                         <MovieDetailBreadcrumbs originalTitle={movie?.original_title} />
                         <MovieDetailCard

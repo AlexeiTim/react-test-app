@@ -1,4 +1,4 @@
-import { Button, Divider, Flex, Image, Modal, Paper, Rating, Text } from "@mantine/core";
+import { Flex, Image, Paper, Rating, Text } from "@mantine/core";
 import { useLocation, useNavigate } from "react-router-dom"
 import { useDisclosure } from "@mantine/hooks";
 import { Movie } from "../types/movie-response";
@@ -8,6 +8,7 @@ import NotPoster from '@/app/assets/imgs/NotPoster.png'
 import dayjs from "dayjs";
 import { favoriteMoviesStorageService } from "../storage";
 import { MovieFavorite } from "../types/movie-favorite";
+import { MovieRatingModal } from "./MovieRatingModal";
 
 interface Props {
     movie: Movie
@@ -66,7 +67,7 @@ export const MovieCard = ({ movie, genres, favorite, changeFavorite = () => { } 
                     <Image
                         src={movie.backdrop_path ? `http://image.tmdb.org/t/p/w500${movie.poster_path}` : NotPoster}
                         onClick={() => handleGoToMovieDetail(movie.id)}
-                        className="cursor-pointer w-[119px] h-[170px]" />
+                        className="cursor-pointer w-[119px] md:w-full md:block h-[170px]" />
                     <Flex justify="space-between" className="w-full">
                         <Flex direction="column" justify="space-between">
                             <Flex direction="column" gap={8}>
@@ -96,23 +97,15 @@ export const MovieCard = ({ movie, genres, favorite, changeFavorite = () => { } 
                     </Flex>
                 </Flex>
             </Paper>
-            <Modal opened={opened} onClose={close} title="Your rating" centered>
-                <div>
-                    <Divider />
-                    <div className="mt-4">
-                        <Flex direction="column" gap={16}>
-                            <Text fw={600} size="16px">
-                                {movie.original_title}
-                            </Text>
-                            <Rating value={favorite?.favoriteRating ? favorite?.favoriteRating : selectedRaiting} onChange={setSelectedRaiting} count={10} size={28} />
-                            <Flex>
-                                <Button onClick={handleAddToStorageFavoriteMovie} color="grape">Save</Button>
-                                <Button onClick={handleRemoveRating} variant="transparent" color="grape">Remove rating</Button>
-                            </Flex>
-                        </Flex>
-                    </div>
-                </div>
-            </Modal>
+            <MovieRatingModal
+                addToStorageFavoriteMovie={handleAddToStorageFavoriteMovie}
+                close={close}
+                opened={opened}
+                removeRating={handleRemoveRating}
+                selectedRating={selectedRaiting}
+                setSelectedRating={setSelectedRaiting}
+                title={movie.original_title}
+            />
         </div>
     )
 }

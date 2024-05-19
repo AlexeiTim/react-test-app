@@ -9,7 +9,7 @@ interface Props {
 
 export const RatedHeader = (props: Props) => {
     return (
-        <Flex align="center" justify="space-between" mb={40} className="w-full">
+        <Flex align="center" justify="space-between" wrap="wrap" mb={40} gap={4} className="w-full">
             <Text fw={600} size="32px">Rated movies</Text>
             <SearchRatedMoviesInput
                 search={props.search}
