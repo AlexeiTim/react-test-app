@@ -30,7 +30,7 @@ export const RatedMoviesPage = () => {
 
     useEffect(() => {
         setFavoritesMovies([...favoriteMoviesStorageService.favorites])
-        searchFavoriteMovies()
+        setSearchMovies([...favoriteMoviesStorageService.favorites])
         definePagination(favoriteMoviesStorageService.favorites)
     }, [])
 
