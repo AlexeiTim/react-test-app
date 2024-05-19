@@ -6,6 +6,6 @@ Github: https://github.com/AlexeiTim/react-test-app-proxy-server
 
 # Client
 
-Deploy: https://react-test-app-git-24-rated-pagination-alexeitims-projects.vercel.app/movies
+Deploy: https://react-test-app-plum.vercel.app/movies
 
 Github: `this`
