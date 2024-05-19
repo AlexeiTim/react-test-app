@@ -1,0 +1,1 @@
+export const ratingsOptions = Array(10).fill(null).map((_, index) => String(index + 1))
