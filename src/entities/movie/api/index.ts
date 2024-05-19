@@ -12,11 +12,8 @@ class MoviesService<T> extends BaseApiService<T> {
 
     public async getMovie(id: number): Promise<BaseResponse<MovieDetailResponse>> {
         return makeRequest<MovieDetailResponse>({
-            url: `${ENDPOINTS.MOVIE_DETAIL}/${id}`,
+            url: `${ENDPOINTS.MOVIES}/${id}`,
             method: API_METHODS.GET,
-            params: {
-                append_to_response: 'videos'
-            }
         })
     }
 }
