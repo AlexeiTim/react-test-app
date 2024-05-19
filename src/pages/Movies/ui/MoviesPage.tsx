@@ -59,6 +59,7 @@ export const MoviesPage = () => {
             setError(null)
             setIsLoading(true)
             const { data } = await moviesService.getAll(params)
+            console.log(data)
             setMovies(data.results)
             setTotalPages(data.total_pages > 500 ? 500 : data.total_pages)
         } catch (e) {
