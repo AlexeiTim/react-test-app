@@ -5,15 +5,16 @@ import { useParams } from "react-router-dom";
 import { MovieDetailResponse } from "@/entities/movie/types/movies-detail-response";
 import { AppLoader } from "@/shared/ui/AppLoader";
 import { IconX } from "@tabler/icons-react";
-import { Button, Divider, Flex, Image, Modal, Notification, NumberFormatter, Paper, Rating, Text } from "@mantine/core";
+import { Divider, Flex, Notification, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useMemo } from "react";
-import NotPoster from '@/app/assets/imgs/NotPoster.png'
-import dayjs from "dayjs";
-import NotCompanyLogo from '@/app/assets/imgs/NotCompanyLogo.png'
 import { favoriteMoviesStorageService } from "@/entities/movie/storage";
 import { MovieFavorite } from "@/entities/movie/types/movie-favorite";
 import { MovieDetailViewDTO } from "@/entities/movie/dto/movie-detail-to-view-dto";
+import { MovieTrailerBlock } from "./MovieTrailerBlock";
+import { MovieOverviewBlock } from "./MovieOverviewBlock";
+import { MovieProductionBlock } from "./MovieProductionBlock";
+import { MovieRatingModal } from "@/entities/movie/ui/MovieRatingModal";
+import { MovieDetailCard } from "@/entities/movie/ui/MovieDetailCard";
 
 export const MoviePage = () => {
     const params = useParams()
@@ -24,55 +25,24 @@ export const MoviePage = () => {
     const [opened, { open, close }] = useDisclosure(false);
     const [favorite, setFavorite] = useState<MovieFavorite | null>(null)
 
-    const currentGenres = useMemo(() => {
-        if (!movie) return
-
-        if (!movie.genres.length) return 'Unknown'
-        return movie.genres.map(g => g.name).join(' ')
-    }, [movie])
-
-    const movieCount = useMemo(() => {
-        if (!movie) return ''
-
-        const calcCount = movie.vote_count / 1000
-        return calcCount > 1 ? calcCount.toFixed(2) + 'K' : movie.vote_count
-    }, [movie])
-
-    const moviePremiere = useMemo(() => {
-        if (!movie?.release_date) return 'unknown'
-
-        const date = dayjs(movie.release_date).locale('en').format('MMMM D,YYYY')
-        return date
-    }, [movie])
 
     useEffect(() => {
         if (!params.id) return
+
         if (!favoriteMoviesStorageService.init)
             favoriteMoviesStorageService.initFavorites()
 
         const favoriteMap = favoriteMoviesStorageService.favoritesMap.get(+params.id)
         if (!favoriteMap) return
+
         setFavorite(favoriteMap)
     }, [params])
-
 
     useEffect(() => {
         if (!params.id) return
 
         getMovie(+params.id)
     }, [params])
-
-    const duration = useMemo(() => {
-        if (!movie) return ''
-
-        let result = ''
-        const hours = Math.floor(movie?.runtime / 60)
-        if (hours > 0)
-            result += hours + 'h'
-
-        const calcMinutes = movie?.runtime - hours * 60
-        return result += ' ' + calcMinutes + 'm'
-    }, [movie])
 
     async function getMovie(id: number) {
         try {
@@ -109,144 +79,41 @@ export const MoviePage = () => {
         setFavorite(null)
         close()
     }
+
+    if (isLoading)
+        return <AppLoader />
+
     return (
         <div>
             {error && <Notification title={error} icon={<IconX />} color="red" />}
-            {isLoading ? (
-                <AppLoader />
-            ) : (
-                <>
-                    {movie && (
-                        <div className="h-[400px] w-[800px]">
-                            <Flex direction="column" gap={20}>
-                                <MovieDetailBreadcrumbs originalTitle={movie?.original_title} />
-                                <Paper p={24} radius="lg">
-                                    <Flex gap={16} direction={{ base: 'column', sm: 'row' }}>
-                                        <Image
-                                            src={movie.backdrop_path ? `http://image.tmdb.org/t/p/w500${movie.poster_path}` : NotPoster}
-                                            className="w-[250px] h-[350px]" />
-                                        <Flex justify="space-between" className="w-full">
-                                            <Flex direction="column" justify="space-between">
-                                                <Flex direction="column" gap={8}>
-                                                    <Text c='#9854F6' fw={700} size="20px">{movie.original_title}</Text>
-                                                    <Text c='#7B7C88' size="16px">
-                                                        {movie.release_date.length
-                                                            ? dayjs(movie.release_date).format('YYYY')
-                                                            : 'unknown'
-                                                        }
-                                                    </Text>
-                                                    <Flex gap={8} align="center">
-                                                        <Flex gap={4} align="center">
-                                                            <Rating size={28} count={1} value={1} readOnly />
-                                                            <Text fw={700}>{movie.vote_average}</Text>
-                                                        </Flex>
-                                                        <Text c='#7B7C88'>({movieCount})</Text>
-                                                    </Flex>
-                                                </Flex>
-                                                <Text size="16px">
-                                                    <Flex direction="column" gap={12}>
-                                                        <Flex>
-                                                            <Text c="#7B7C88" className="w-[140px]">Duration</Text>
-                                                            <div>{duration}</div>
-                                                        </Flex>
-                                                        <Flex>
-                                                            <Text c="#7B7C88" className="w-[140px]">Premiere</Text>
-                                                            <div>{moviePremiere}</div>
-                                                        </Flex>
-                                                        <Flex>
-                                                            <Text c="#7B7C88" className="w-[140px]">Budget</Text>
-                                                            <NumberFormatter prefix="$" value={movie.budget} thousandSeparator />
-                                                        </Flex>
-                                                        <Flex>
-                                                            <Text c="#7B7C88" className="w-[140px]">Gross worldwide</Text>
-                                                            <NumberFormatter prefix="$" value={movie.revenue} thousandSeparator />
-                                                        </Flex>
-                                                        <Flex>
-                                                            <Text c="#7B7C88" className="text-[#7B7C88] w-[140px]">Genres</Text>
-                                                            <Text>{currentGenres}</Text>
-                                                        </Flex>
-                                                    </Flex>
-                                                </Text>
-                                            </Flex>
-                                            <div>
-                                                <Flex align="center" justify="start" gap={4}>
-                                                    <Rating color="grape" count={1} value={favorite ? favorite.favoriteRating : 0} size={28} onClick={open} />
-                                                    {favorite && <Text fw={700}>{favorite.favoriteRating}</Text>}
-                                                </Flex>
-                                            </div>
-                                        </Flex>
-                                    </Flex>
-                                </Paper>
-                                <Paper p={24} className="h-auto flex flex-col gap-5">
-                                    <div>
-                                        <Text fw={600} size="20px" className="pb-4">Trailer</Text>
-                                        {movie.videos.results.length ? (
-                                            <Paper p={4}>
-                                                <iframe width="500" height="281" className="rounded-md"
-                                                    src={`https://www.youtube.com/embed/${movie.videos.results[0].key}`}
-                                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                                                >
-                                                </iframe>
-                                            </Paper>
-                                        ) : (
-                                            <Text>No trailer</Text>
-                                        )}
-                                    </div>
-                                    <Divider />
-                                    {movie.overview
-                                        ? (<Flex direction="column" gap={16}>
-                                            <Text size="20px" fw={600}>Description</Text>
-                                            <Text>{movie.overview}</Text>
-                                        </Flex>)
-                                        : (<Text>No description</Text>)
-                                    }
-                                    <Divider />
-                                    <Flex direction="column" gap={16}>
-                                        <Text size="20px" fw={600}>Production</Text>
-                                        <Flex direction="column" gap={12}>
-                                            {movie.production_companies.length
-                                                ? (
-                                                    <>
-                                                        {movie.production_companies.map((c) => {
-                                                            return (
-                                                                <Flex key={c.id} gap={8} align="center">
-                                                                    <div className="w-[40px] h-[40px] rounded-[50%]" style={{
-                                                                        backgroundImage: c.logo_path ? `url('http://image.tmdb.org/t/p/w500${c.logo_path}')` : `url('${NotCompanyLogo}')`,
-                                                                        backgroundPosition: 'center',
-                                                                        backgroundRepeat: 'no-repeat',
-                                                                        backgroundSize: 'cover'
-                                                                    }}></div>
-                                                                    <Text fw={600} size="16px">{c.name}</Text>
-                                                                </Flex>
-                                                            )
-                                                        })}
-                                                    </>
-                                                )
-                                                : (<Text>No production</Text>)
-                                            }
-                                        </Flex>
-                                    </Flex>
-                                </Paper>
-                            </Flex>
+            {movie && (
+                <div className="h-[400px] w-[800px]">
+                    <Flex direction="column" gap={20}>
+                        <MovieDetailBreadcrumbs originalTitle={movie?.original_title} />
+                        <MovieDetailCard
+                            favorite={favorite}
+                            movie={movie}
+                            openRatingModal={open}
+                        />
+                        <Paper p={24} className="h-auto flex flex-col gap-5">
+                            <MovieTrailerBlock movie={movie} />
+                            <Divider />
+                            <MovieOverviewBlock movie={movie} />
+                            <Divider />
+                            <MovieProductionBlock movie={movie} />
+                        </Paper>
+                    </Flex>
 
-                            <Modal opened={opened} onClose={close} title="Your rating" centered>
-                                <div>
-                                    <Divider />
-                                    <div className="mt-4">
-                                        <Flex direction="column" gap={16}>
-                                            <Text fw={600} size="16px">Coco</Text>
-                                            <Rating count={10} size={28} value={selectedRating} onChange={setSelectedRating} />
-                                            <Flex>
-                                                <Button onClick={handleAddToStorageFavoriteMovie} color="grape">Save</Button>
-                                                <Button onClick={handleRemoveRating} variant="transparent" color="grape">Remove rating</Button>
-                                            </Flex>
-                                        </Flex>
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div>
-                    )}
-                </>
+                    <MovieRatingModal
+                        addToStorageFavoriteMovie={handleAddToStorageFavoriteMovie}
+                        close={close}
+                        opened={opened}
+                        removeRating={handleRemoveRating}
+                        selectedRating={selectedRating}
+                        setSelectedRating={setSelectedRating}
+                        title={movie.original_title}
+                    />
+                </div>
             )}
         </div>
     )

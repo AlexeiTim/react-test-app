@@ -27,7 +27,7 @@ export const MovieCard = ({ movie, genres, favorite, changeFavorite = () => { } 
     }
 
     const currentGenres = useMemo(() => {
-        if (!movie.genre_ids.length) return 'Unknown'
+        if (!movie.genre_ids?.length) return 'Unknown'
         return genres?.length && genres.map(g => movie.genre_ids.includes(g.id) ? g.name : '').join(' ')
     }, [movie.genre_ids, genres])
 
@@ -71,7 +71,7 @@ export const MovieCard = ({ movie, genres, favorite, changeFavorite = () => { } 
                         <Flex direction="column" justify="space-between">
                             <Flex direction="column" gap={8}>
                                 <Text c='#9854F6' fw={700} size="20px">{movie.original_title}</Text>
-                                <Text c='#7B7C88' size="16px">{dayjs(movie.release_date).format('YYYY')}</Text>
+                                <Text c='#7B7C88' size="16px">{movie.release_date ? dayjs(movie.release_date).format('YYYY') : 'unknown'}</Text>
                                 <Flex gap={8} align="center">
                                     <Flex gap={4} align="center">
                                         <Rating size={28} count={1} value={1} readOnly />
