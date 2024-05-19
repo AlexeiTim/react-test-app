@@ -130,7 +130,6 @@ export const MoviesPage = () => {
                     />
                 </Flex>
 
-                {/* Контент */}
                 {!isLoading
                     ? (
                         <MoviesContent
