@@ -14,7 +14,6 @@ export const RatedMoviesPage = () => {
     const [activePage, setActivePage] = useState(1)
     const [genres, setGenres] = useState<Genre[]>([])
     const [favoritesMovies, setFavoritesMovies] = useState<MovieFavorite[]>([])
-    const [searchedFavoritesMovies, setSearchedFavoritesMovies] = useState<MovieFavorite[]>([])
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
 
@@ -25,15 +24,19 @@ export const RatedMoviesPage = () => {
 
     function handleSearchFavoriteMovies() {
         setActivePage(1)
-        if (!search) return setSearchedFavoritesMovies(favoritesMovies)
-        return setSearchedFavoritesMovies(favoritesMovies.filter(f => f.original_title.toLowerCase().indexOf(search.toLocaleLowerCase()) >= 0))
+        setSearch(search)
     }
+
+    const searchedFavoritesMovies = useMemo(() => {
+        if (!search) favoritesMovies
+        return favoritesMovies.filter(f => f.original_title.toLowerCase().indexOf(search.toLocaleLowerCase()) >= 0)
+    }, [search, favoritesMovies])
 
     useEffect(() => {
         setFavoritesMovies([...favoriteMoviesStorageService.favorites])
-        setSearchedFavoritesMovies([...favoriteMoviesStorageService.favorites])
         definePagination(favoriteMoviesStorageService.favorites)
     }, [])
+
 
     useEffect(() => {
         getGenders()
@@ -54,11 +57,14 @@ export const RatedMoviesPage = () => {
 
     const resultFavoriteMovies = useMemo(() => {
         setTotalPages(Math.ceil(searchedFavoritesMovies.length / 19))
-        return searchedFavoritesMovies.slice((activePage - 1) * 20, activePage * 20)
+        const result = searchedFavoritesMovies.slice((activePage - 1) * 20, activePage * 20)
+        definePagination(result)
+        return result
     }, [activePage, searchedFavoritesMovies])
 
     return (
         <div className="w-full">
+            {totalPages}
             {!!favoritesMovies.length && (
                 <Flex align="center" justify="space-between" mb={40} className="w-full">
                     <Text fw={600} size="32px">Rated movies</Text>
@@ -69,8 +75,9 @@ export const RatedMoviesPage = () => {
                     />
                 </Flex>
             )}
+
             {(!resultFavoriteMovies.length && !!favoritesMovies.length) && (<Text className="text-center">No Search</Text>)}
-            {resultFavoriteMovies.length ? (
+            {(!!resultFavoriteMovies.length || favoritesMovies.length) ? (
                 <Flex direction="column" gap={40}>
                     <Flex direction="column" gap={24}>
                         <Grid columns={12} >
@@ -85,7 +92,7 @@ export const RatedMoviesPage = () => {
                                 </Grid.Col>
                             ))}
                         </Grid>
-                        {!!resultFavoriteMovies.length && (<Flex justify="center">
+                        {(!!resultFavoriteMovies.length && favoritesMovies.length && totalPages > 1) && (<Flex justify="center">
                             <Pagination total={totalPages} value={activePage} onChange={setActivePage} color="grape" />
                         </Flex>)}
                     </Flex>
