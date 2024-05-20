@@ -6,7 +6,8 @@ export default {
   ],
   theme: {
     colors: {
-      'bg-nav': '#E5D5FA'
+      'bg-nav': '#F2EBF9',
+      'purple-main': '#9854F6'
     },
     extend: {},
   },

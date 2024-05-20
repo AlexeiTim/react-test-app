@@ -17,7 +17,7 @@ export const MovieDetailBreadcrumbs = (props: Props) => {
         { title: location.pathname.includes('rated') ? 'rated' : 'movies', href: location.pathname.includes('rated') ? '/rated-movies' : '/movies' },
         { title: props.originalTitle, href: '#' },
     ].map((item, index) => (
-        <Anchor onClick={() => handleGoTo(item.href)} key={index}>
+        <Anchor className="text-purple-main" onClick={() => handleGoTo(item.href)} key={index}>
             {item.title}
         </Anchor>
     ));

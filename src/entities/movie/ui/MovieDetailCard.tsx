@@ -52,7 +52,7 @@ export const MovieDetailCard = ({ movie, favorite, openRatingModal }: Props) => 
                 <Flex justify="space-between" className="w-full">
                     <Flex direction="column" justify="space-between">
                         <Flex direction="column" gap={8}>
-                            <Text c='#9854F6' fw={700} size="20px">{movie.original_title}</Text>
+                            <Text className="text-purple-main" fw={700} size="20px">{movie.original_title}</Text>
                             <Text c='#7B7C88' size="16px">
                                 {movie.release_date.length
                                     ? dayjs(movie.release_date).format('YYYY')

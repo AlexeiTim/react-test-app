@@ -84,7 +84,7 @@ export const MoviesPage = () => {
     return (
         <div className="w-full">
             {error && (<Notification icon={<IconX />} color="red" title={error} />)}
-            <h1 className="text-[32px]/[140%] font-bold">Movies</h1>
+            <h1 className="text-[32px]/[140%] font-bold mb-[40px]">Movies</h1>
             <Flex direction="column" gap={24}>
                 <Flex gap={16} wrap="wrap" align='end'>
                     <Select
