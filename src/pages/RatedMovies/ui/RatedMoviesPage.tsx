@@ -47,7 +47,7 @@ export const RatedMoviesPage = () => {
         return <RatedEmpty />
 
     return (
-        <div className="w-full">
+        <div>
             <RatedHeader
                 search={search}
                 setSearch={setSearch}

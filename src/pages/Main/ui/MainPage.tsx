@@ -46,13 +46,17 @@ export const MainPage = () => {
             <AppShell.Navbar className="bg-bg-nav" p="md">
                 <Flex direction="column" gap={80}>
                     <AppLogo />
-                    <Tabs color="grape" variant="pills" orientation="vertical" value={activeTab} onChange={handleChangeActiveTab} className="m-auto w-full">
-                        <Tabs.List className="flex flex-col gap-4 w-full">
-                            <Tabs.Tab value="movies" >
-                                <Link to='/movies'>Movies</Link>
+                    <Tabs style={{
+                        '--tab-color': 'black',
+                        '--mantine-color-blue-filled': '#E5D5FA',
+                        '--mantine-color-white': '#9854F6'
+                    }} variant="pills" orientation="vertical" value={activeTab} onChange={handleChangeActiveTab} className="m-auto w-full">
+                        <Tabs.List color="rgb(152, 84, 246)" className="flex flex-col gap-4 w-full">
+                            <Tabs.Tab color="" value="movies" >
+                                <Link className="font-bold" to='/movies'>Movies</Link>
                             </Tabs.Tab>
                             <Tabs.Tab value="rated-movies">
-                                <Link to='/rated-movies'>Rated movies</Link>
+                                <Link className="font-regular" to='/rated-movies'>Rated movies</Link>
                             </Tabs.Tab>
                         </Tabs.List>
                     </Tabs>

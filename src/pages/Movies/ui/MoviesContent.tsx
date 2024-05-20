@@ -29,7 +29,7 @@ export const MoviesContent = ({ movies, genres, totalPages, activePage, setActiv
         <>
             <Grid columns={12} >
                 {movies.map((movie) => (
-                    <Grid.Col span={{ base: 12, sm: 6 }}>
+                    <Grid.Col key={movie.id} span={{ base: 12, lg: 6 }}>
                         <MovieCard
                             changeFavorite={() => setFavorites([...favoriteMoviesStorageService.favorites])}
                             movie={movie}

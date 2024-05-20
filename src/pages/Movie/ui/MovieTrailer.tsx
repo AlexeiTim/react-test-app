@@ -11,7 +11,7 @@ export const MovieTrailer = ({ movie }: Props) => {
 
     return (
         <Paper p={4}>
-            <iframe width="500" height="281" className="rounded-md"
+            <iframe height="281" className="rounded-md sm:w-full md:w-[500px]"
                 src={`https://www.youtube.com/embed/${movie.videos.results[0].key}`}
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
             >
